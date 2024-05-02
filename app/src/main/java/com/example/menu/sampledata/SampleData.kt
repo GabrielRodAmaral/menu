@@ -1,45 +1,75 @@
 package com.example.menu.sampledata
 
-import com.example.menu.R
 import com.example.menu.model.Product
 import java.math.BigDecimal
 
-val samplePromotions = listOf(
-    Product(
-        "Hambúrguer",
-        BigDecimal(35.90),
-        R.drawable.burger
-    ),
-    Product(
-        "Batata frita",
-        BigDecimal(15.50),
-        R.drawable.fries
-    ),
-    Product(
-        "Pizza",
-        BigDecimal(40.0),
-        R.drawable.pizza
-    )
-)
-
-
 val sampleCandies = listOf(
     Product(
-        "Bolo de chocolate",
-        BigDecimal(43.0),
-        R.drawable.cake
+        name = "Chocolate",
+        price = BigDecimal("3.99"),
+        image = "https://images.pexels.com/photos/65882/chocolate-dark-coffee-confiserie-65882.jpeg",
+    ),
+    Product(
+        name = "Sorvete",
+        price = BigDecimal("5.99"),
+        image = "https://images.pexels.com/photos/1352278/pexels-photo-1352278.jpeg",
+    ),
+    Product(
+        name = "Bolo",
+        price = BigDecimal("11.99"),
+        image = "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
     )
 )
 
 val sampleDrinks = listOf(
     Product(
-        "Coca-Cola",
-        BigDecimal(12.5),
-        R.drawable.coke
+        name = "Cerveja",
+        price = BigDecimal("5.99"),
+        image = "https://images.pexels.com/photos/1552630/pexels-photo-1552630.jpeg",
     ),
     Product(
-        "Suco de laranja",
-        BigDecimal(9.2),
-        R.drawable.juicy
+        name = "Refrigerante",
+        price = BigDecimal("4.99"),
+        image = "https://images.pexels.com/photos/2775860/pexels-photo-2775860.jpeg"
+    ),
+    Product(
+        name = "Suco",
+        price = BigDecimal("7.99"),
+        image = "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg"
+    ),
+    Product(
+        name = "Água",
+        price = BigDecimal("2.99"),
+        image = "https://images.pexels.com/photos/327090/pexels-photo-327090.jpeg"
     )
 )
+
+val sampleProducts: List<Product> = listOf(
+    Product(
+        name = "Hamburguer",
+        price = BigDecimal("12.99"),
+        image = "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg"
+    ),
+    Product(
+        name = "Pizza",
+        price = BigDecimal("19.99"),
+        image = "https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg"
+    ),
+    Product(
+        name = "Batata frita",
+        price = BigDecimal("7.99"),
+        image = "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg"
+    ), *sampleDrinks.toTypedArray(), *sampleCandies.toTypedArray()
+)
+
+val sampleSections = mapOf(
+    "Promoções" to sampleProducts,
+    "Doces" to sampleCandies,
+    "Bebidas" to sampleDrinks
+)
+
+val largeSections = List(1000) {
+    Product("$it", BigDecimal("$it.99"))
+}.associate {
+    it.name to sampleProducts
+}

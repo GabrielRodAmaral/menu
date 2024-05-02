@@ -1,6 +1,5 @@
 package com.example.menu.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,18 +27,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.menu.R
 import com.example.menu.extensions.toBrazilianCurrency
 import com.example.menu.model.Product
+import com.example.menu.ui.theme.MenuTheme
 import java.math.BigDecimal
 
 @Composable
-fun ProductItem(product: Product) {
+fun ProductItem(
+    product: Product,
+    modifier: Modifier = Modifier
+) {
     Surface(
+        modifier,
         shape = RoundedCornerShape(15.dp),
-        shadowElevation = 4.dp,
+        shadowElevation = 4.dp
     ) {
         Column(
             Modifier
@@ -52,28 +59,26 @@ fun ProductItem(product: Product) {
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                Color(0xFF6200EE),
-                                Color(0xFF03DAC5)
+                                Color(0xFF8E99F3),
+                                MaterialTheme.colorScheme.primary
                             )
                         )
                     )
                     .fillMaxWidth()
             ) {
-                Image(
-                    painter = painterResource(id = product.image),
-                    contentDescription = "Imagem do produto",
+                AsyncImage(
+                    model = product.image,
+                    contentDescription = null,
                     Modifier
-                        .offset(y = (imageSize / 2))
                         .size(imageSize)
-                        .align(Alignment.BottomCenter)
-                        .clip(shape = CircleShape),
-                    contentScale = ContentScale.Crop
+                        .offset(y = imageSize / 2)
+                        .clip(shape = CircleShape)
+                        .align(Alignment.BottomCenter),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.placeholder)
                 )
             }
-            Spacer(
-                modifier = Modifier
-                    .height(imageSize / 2)
-            )
+            Spacer(modifier = Modifier.height(imageSize / 2))
             Column(Modifier.padding(16.dp)) {
                 Text(
                     text = product.name,
@@ -95,12 +100,15 @@ fun ProductItem(product: Product) {
 
 @Preview(showBackground = true)
 @Composable
-fun ProductItemPreview() {
-    ProductItem(
-        Product(
-            "Batatinha",
-            BigDecimal(23.90),
-            R.drawable.placeholder
-        )
-    )
+private fun ProductItemPreview() {
+    MenuTheme {
+        Surface {
+            ProductItem(
+                Product(
+                    name = LoremIpsum(50).values.first(),
+                    price = BigDecimal("14.99")
+                )
+            )
+        }
+    }
 }
