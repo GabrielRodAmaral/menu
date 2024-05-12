@@ -72,13 +72,14 @@ fun CardProductItem(
                     text = product.price.toBrazilianCurrency()
                 )
             }
+            val maxLines = if (expandedState) Int.MAX_VALUE else 2
             val textOverflow = if (expandedState) TextOverflow.Visible else TextOverflow.Ellipsis
             product.description?.let {
                 Text(
                     text = product.description,
                     Modifier
                         .padding(16.dp),
-                    maxLines = 2,
+                    maxLines = maxLines,
                     overflow = textOverflow
                 )
             }

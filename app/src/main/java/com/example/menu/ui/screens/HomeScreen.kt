@@ -27,55 +27,53 @@ import com.example.menu.model.Product
 import com.example.menu.sampledata.sampleProducts
 import com.example.menu.sampledata.sampleSections
 import com.example.menu.ui.components.CardProductItem
+import com.example.menu.ui.components.ProductsSection
+import com.example.menu.ui.components.SearchTextField
 import com.example.menu.ui.theme.MenuTheme
 
 @Composable
 fun HomeScreen(
-    sections: Map<String, List<Product>>
+    sections: Map<String, List<Product>>,
+    searchText: String = ""
 ) {
     Column {
-        var text by remember {mutableStateOf("")}
-        OutlinedTextField(
-            value = text,
-            onValueChange = { new ->
-                text = new
-            },
-            modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(100),
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "ícone de lupa")
-            },
-            label = {
-                Text(text = "Produto")
-            },
-            placeholder = {
-                Text(text = "O que você procura?")
-            }
-        )
+        var text by remember {mutableStateOf(searchText)}
+        SearchTextField(searchText = text) {
+            text = it
+        }
+        val filteredProducts = remember(text) {
+            if (text.isNotBlank()) {
+                sampleProducts.filter {p ->
+                    p.name.contains(text, true) ||
+                            p.description?.contains(text, true) ?: false
+                }
+            } else emptyList()
+        }
         LazyColumn(
             Modifier
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
-            items(sampleProducts) {p ->
-                CardProductItem(
-                    product = p,
-                    Modifier.padding(horizontal = 16.dp)
-                )
+            if (text.isBlank()) {
+                for (section in sections) {
+                    val title = section.key
+                    val products = section.value
+                    item {
+                        ProductsSection(
+                            title = title,
+                            products = products
+                        )
+                    }
+                }
+            } else {
+                items(filteredProducts) {p ->
+                    CardProductItem(
+                        product = p,
+                        Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
-//            for (section in sections) {
-//                val title = section.key
-//                val products = section.value
-//                item {
-//                    ProductsSection(
-//                        title = title,
-//                        products = products
-//                    )
-//                }
-//            }
         }
     }
 }
@@ -86,6 +84,16 @@ private fun HomeScreenPreview() {
     MenuTheme {
         Surface {
             HomeScreen(sampleSections)
+        }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+private fun HomeScreenWithSearchTextPreview() {
+    MenuTheme {
+        Surface {
+            HomeScreen(sampleSections, "Promo")
         }
     }
 }
