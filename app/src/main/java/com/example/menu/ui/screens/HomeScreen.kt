@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import com.example.menu.model.Product
 import com.example.menu.sampledata.sampleProducts
 import com.example.menu.sampledata.sampleSections
+import com.example.menu.sampledata.sampleShopsSections
 import com.example.menu.ui.components.CardProductItem
+import com.example.menu.ui.components.PartnersSection
 import com.example.menu.ui.components.ProductsSection
 import com.example.menu.ui.components.SearchTextField
 import com.example.menu.ui.theme.MenuTheme
@@ -64,6 +66,14 @@ fun HomeScreen(
                             title = title,
                             products = products
                         )
+                    }
+                }
+
+                for (shopSections in sampleShopsSections){
+                    val title = shopSections.key
+                    val shop = shopSections.value
+                    item {
+                        PartnersSection(title = title, shop = shop)
                     }
                 }
             } else {

@@ -1,31 +1,27 @@
 package com.example.menu.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.menu.model.Product
-import com.example.menu.sampledata.sampleProducts
-import com.example.menu.ui.theme.MenuTheme
+import com.example.menu.model.Shop
 
 @Composable
-fun ProductsSection(
+fun PartnersSection(
     title: String,
-    products: List<Product>,
+    shop: List<Shop>,
     modifier: Modifier = Modifier
 ) {
-    Section (
+    Section(
         title = {
             Text(
                 text = title,
@@ -34,21 +30,20 @@ fun ProductsSection(
                     end = 16.dp
                 ),
                 fontSize = 20.sp,
-                fontWeight = FontWeight(400)
+                fontWeight = FontWeight(400),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         },
         content = {
             LazyRow(
                 Modifier
-                    .padding(
-                        top = 8.dp
-                    )
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(products) { p ->
-                    ProductItem(product = p)
+                items(shop) { s ->
+                    CardPartner(shop = s)
                 }
             }
         },
@@ -56,12 +51,3 @@ fun ProductsSection(
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun ProductsSectionPreview() {
-    MenuTheme {
-        Surface {
-            ProductsSection("Promoções", products = sampleProducts)
-        }
-    }
-}
