@@ -1,5 +1,6 @@
 package com.example.menu.sampledata
 
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import com.example.menu.model.Product
 import java.math.BigDecimal
 
@@ -18,6 +19,7 @@ val sampleCandies = listOf(
         name = "Bolo",
         price = BigDecimal("11.99"),
         image = "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
+        description = LoremIpsum(15).values.first()
     )
 )
 
@@ -40,7 +42,8 @@ val sampleDrinks = listOf(
     Product(
         name = "Água",
         price = BigDecimal("2.99"),
-        image = "https://images.pexels.com/photos/327090/pexels-photo-327090.jpeg"
+        image = "https://images.pexels.com/photos/327090/pexels-photo-327090.jpeg",
+        description = LoremIpsum(50).values.first()
     )
 )
 
@@ -58,7 +61,8 @@ val sampleProducts: List<Product> = listOf(
     Product(
         name = "Batata frita",
         price = BigDecimal("7.99"),
-        image = "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg"
+        image = "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg",
+        description = LoremIpsum(25).values.first()
     ), *sampleDrinks.toTypedArray(), *sampleCandies.toTypedArray()
 )
 

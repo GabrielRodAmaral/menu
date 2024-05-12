@@ -5,9 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.menu.sampledata.largeSections
-import com.example.menu.sampledata.sampleCandies
 import com.example.menu.sampledata.sampleSections
 import com.example.menu.ui.screens.HomeScreen
 import com.example.menu.ui.theme.MenuTheme
