@@ -33,31 +33,46 @@ import com.example.menu.ui.components.ProductsSection
 import com.example.menu.ui.components.SearchTextField
 import com.example.menu.ui.theme.MenuTheme
 
+class HomeScreenUiState(searchText: String = "") {
+
+    var text by mutableStateOf(searchText)
+        private set
+
+    val filteredProducts get() =
+        if (text.isNotBlank()) {
+            sampleProducts.filter {p ->
+                p.name.contains(text, true) ||
+                        p.description?.contains(text, true) ?: false
+            }
+        } else emptyList()
+
+    fun isShowSections(): Boolean {
+        return text.isBlank()
+    }
+
+    val onSearchChange: (String) -> Unit = {
+        text = it
+    }
+}
+
 @Composable
 fun HomeScreen(
     sections: Map<String, List<Product>>,
-    searchText: String = ""
+    state: HomeScreenUiState = HomeScreenUiState()
 ) {
     Column {
-        var text by remember {mutableStateOf(searchText)}
-        SearchTextField(searchText = text) {
-            text = it
-        }
+        val text = state.text
         val filteredProducts = remember(text) {
-            if (text.isNotBlank()) {
-                sampleProducts.filter {p ->
-                    p.name.contains(text, true) ||
-                            p.description?.contains(text, true) ?: false
-                }
-            } else emptyList()
+            state.filteredProducts
         }
+        SearchTextField(searchText = text, onSearchTextChange = state.onSearchChange)
         LazyColumn(
             Modifier
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
-            if (text.isBlank()) {
+            if (state.isShowSections()) {
                 for (section in sections) {
                     val title = section.key
                     val products = section.value
@@ -68,7 +83,6 @@ fun HomeScreen(
                         )
                     }
                 }
-
                 for (shopSections in sampleShopsSections){
                     val title = shopSections.key
                     val shop = shopSections.value
@@ -103,7 +117,7 @@ private fun HomeScreenPreview() {
 private fun HomeScreenWithSearchTextPreview() {
     MenuTheme {
         Surface {
-            HomeScreen(sampleSections, "Promo")
+            HomeScreen(sampleSections, state = HomeScreenUiState("Bat"))
         }
     }
 }

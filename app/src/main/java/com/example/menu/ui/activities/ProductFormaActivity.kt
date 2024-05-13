@@ -36,18 +36,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.menu.R
+import com.example.menu.dao.ProductDao
 import com.example.menu.model.Product
 import com.example.menu.ui.theme.MenuTheme
 import java.math.BigDecimal
 
 class ProductFormaActivity : ComponentActivity() {
 
+    private val dao = ProductDao()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MenuTheme {
                 Surface {
-                    ProductFormScreen()
+                    ProductFormScreen(saveProduct = {
+                        dao.save(it)
+                        finish()
+                    })
                 }
             }
         }
@@ -55,7 +61,7 @@ class ProductFormaActivity : ComponentActivity() {
 }
 
 @Composable
-fun ProductFormScreen() {
+fun ProductFormScreen(saveProduct: (Product) -> Unit = {}) {
     Column(
         Modifier
             .fillMaxSize()
@@ -198,7 +204,7 @@ fun ProductFormScreen() {
                         price = BigDecimal(price),
                         description = description
                     )
-                    Log.i("**Barba*", "${product.name}")
+                    saveProduct(product)
                 }
             }
         ) {
