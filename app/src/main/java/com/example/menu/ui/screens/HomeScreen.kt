@@ -49,12 +49,21 @@ class HomeScreenUiState(
 
 @Composable
 fun HomeScreen(products: List<Product>) {
-    val sections = mapOf(
-        "Todos produtos" to products,
-        "Promoções" to sampleDrinks + sampleCandies,
-        "Doces" to sampleCandies,
-        "Bebidas" to sampleDrinks
-    )
+    var sections = emptyMap<String, List<Product>>()
+    if (products.isNotEmpty()) {
+        sections = mapOf(
+            "Adicionados recentemente" to products,
+            "Promoções" to sampleDrinks + sampleCandies,
+            "Doces" to sampleCandies,
+            "Bebidas" to sampleDrinks
+        )
+    } else {
+        sections = mapOf(
+            "Promoções" to sampleDrinks + sampleCandies,
+            "Doces" to sampleCandies,
+            "Bebidas" to sampleDrinks
+        )
+    }
     var text by remember {
         mutableStateOf("")
     }
