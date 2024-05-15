@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.menu.model.Product
+import com.example.menu.sampledata.sampleCandies
+import com.example.menu.sampledata.sampleDrinks
 import com.example.menu.sampledata.sampleProducts
 import com.example.menu.sampledata.sampleSections
 import com.example.menu.sampledata.sampleShopsSections
@@ -33,38 +35,66 @@ import com.example.menu.ui.components.ProductsSection
 import com.example.menu.ui.components.SearchTextField
 import com.example.menu.ui.theme.MenuTheme
 
-class HomeScreenUiState(searchText: String = "") {
-
-    var text by mutableStateOf(searchText)
-        private set
-
-    val filteredProducts get() =
-        if (text.isNotBlank()) {
-            sampleProducts.filter {p ->
-                p.name.contains(text, true) ||
-                        p.description?.contains(text, true) ?: false
-            }
-        } else emptyList()
-
+class HomeScreenUiState(
+    val sections: Map<String, List<Product>> = emptyMap(),
+    private val products: List<Product> = emptyList(),
+    val searchedProducts: List<Product> = emptyList(),
+    val searchText: String = "",
+    val onSearchChange: (String) -> Unit = {}
+) {
     fun isShowSections(): Boolean {
-        return text.isBlank()
-    }
-
-    val onSearchChange: (String) -> Unit = {
-        text = it
+        return searchText.isBlank()
     }
 }
 
 @Composable
+fun HomeScreen(products: List<Product>) {
+    val sections = mapOf(
+        "Todos produtos" to products,
+        "Promoções" to sampleDrinks + sampleCandies,
+        "Doces" to sampleCandies,
+        "Bebidas" to sampleDrinks
+    )
+    var text by remember {
+        mutableStateOf("")
+    }
+    fun containsInNameOrDescrioption() = { product: Product ->
+        product.name.contains(
+            text,
+            ignoreCase = true,
+        ) || product.description?.contains(
+            text,
+            ignoreCase = true,
+        ) ?: false
+    }
+    val searchedProducts = remember(text, products) {
+        if (text.isNotBlank()) {
+            sampleProducts.filter(containsInNameOrDescrioption()) +
+                    products.filter(containsInNameOrDescrioption())
+        } else emptyList()
+    }
+    val state = remember(products, text) {
+        HomeScreenUiState(
+            sections,
+            products = products,
+            searchedProducts = searchedProducts,
+            searchText = text,
+            onSearchChange = {
+                text = it
+            }
+        )
+    }
+    HomeScreen(state)
+}
+
+@Composable
 fun HomeScreen(
-    sections: Map<String, List<Product>>,
     state: HomeScreenUiState = HomeScreenUiState()
 ) {
     Column {
-        val text = state.text
-        val filteredProducts = remember(text) {
-            state.filteredProducts
-        }
+        val sections = state.sections
+        val text = state.searchText
+        val filteredProducts = state.searchedProducts
         SearchTextField(searchText = text, onSearchTextChange = state.onSearchChange)
         LazyColumn(
             Modifier
@@ -107,7 +137,7 @@ fun HomeScreen(
 private fun HomeScreenPreview() {
     MenuTheme {
         Surface {
-            HomeScreen(sampleSections)
+            HomeScreen(HomeScreenUiState(sampleSections))
         }
     }
 }
@@ -117,7 +147,7 @@ private fun HomeScreenPreview() {
 private fun HomeScreenWithSearchTextPreview() {
     MenuTheme {
         Surface {
-            HomeScreen(sampleSections, state = HomeScreenUiState("Bat"))
+            HomeScreen(HomeScreenUiState(sampleSections, searchText = "Bat"))
         }
     }
 }
