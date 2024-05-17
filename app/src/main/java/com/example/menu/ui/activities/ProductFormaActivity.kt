@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,19 +41,20 @@ import com.example.menu.dao.ProductDao
 import com.example.menu.model.Product
 import com.example.menu.ui.screens.ProductFormScreen
 import com.example.menu.ui.theme.MenuTheme
+import com.example.menu.ui.viewmodels.ProductFormViewModel
 import java.math.BigDecimal
 
 class ProductFormaActivity : ComponentActivity() {
-
-    private val dao = ProductDao()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MenuTheme {
                 Surface {
-                    ProductFormScreen(saveProduct = {
-                        dao.save(it)
+                    val viewModel: ProductFormViewModel by viewModels()
+                    ProductFormScreen(
+                        viewModel = viewModel,
+                        saveProduct = {
                         finish()
                     })
                 }

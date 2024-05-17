@@ -17,9 +17,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -33,114 +35,84 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.menu.R
 import com.example.menu.model.Product
+import com.example.menu.ui.states.ProductFormUiState
 import com.example.menu.ui.theme.MenuTheme
+import com.example.menu.ui.viewmodels.ProductFormViewModel
 import java.math.BigDecimal
 import java.text.DecimalFormat
 
-class ProductFormUiState(
-    val url: String = "",
-    val isInvalidImage: Boolean = false,
-    val name: String = "",
-    val price: String = "",
-    val isPriceError: Boolean = false,
-    val description: String = "",
-    val errorInForm: Boolean = false,
-    val onUrlChange: (String) -> Unit = {},
-    val onNameChange: (String) -> Unit = {},
-    val onPriceChange: (String) -> Unit = {},
-    val onDescriptionChange: (String) -> Unit = {},
-    val buttonSaveClick: () -> Unit = {},
-    val imageSuccess: () -> Unit = {},
-    val imageError: () -> Unit = {}
-)
-
 @Composable
 fun ProductFormScreen(
-    saveProduct: (Product) -> Unit = {}
+    viewModel: ProductFormViewModel,
+    saveProduct: () -> Unit = {}
 ) {
-    var name by remember {
-        mutableStateOf("")
-    }
-    var url by remember {
-        mutableStateOf("")
-    }
-    var price by remember {
-        mutableStateOf("")
-    }
-    var description by remember {
-        mutableStateOf("")
-    }
-    val formatter = remember {
-        DecimalFormat("#.##")
-    }
-    var errorInForm by remember {
-        mutableStateOf(false)
-    }
-    var isInvalidImage by remember {
-        mutableStateOf(false)
-    }
-    var isPriceError by remember {
-        mutableStateOf(false)
-    }
+//    ProductFormScreen(
+//        state = ProductFormUiState(
+//            url = url,
+//            name = name,
+//            price = price,
+//            description = description,
+//            isInvalidImage = isInvalidImage,
+//            isPriceError = isPriceError,
+//            errorInForm = errorInForm,
+//            imageSuccess = {
+//                isInvalidImage = false
+//            },
+//            imageError = {
+//                isInvalidImage = true
+//            },
+//            onUrlChange = {
+//                url = it
+//            },
+//            onNameChange = {
+//                name = it
+//            },
+//            onPriceChange = {
+//                isPriceError = try {
+//                    BigDecimal(it)
+//                    false
+//                } catch (e: IllegalArgumentException) {
+//                    it.isNotEmpty()
+//                }
+//                price = it
+//            },
+//            onDescriptionChange = {
+//                description = it
+//            },
+//            buttonSaveClick = {
+//                if (isPriceError ||
+//                    (description.isEmpty() || description.isBlank()) ||
+//                    (name.isEmpty() || name.isEmpty()) ||
+//                    isInvalidImage || url.isBlank() || url.isEmpty()
+//                ) {
+//                    errorInForm = true
+//                } else {
+//                    errorInForm = false
+//                    val product = Product(
+//                        name = name,
+//                        image = url,
+//                        price = BigDecimal(price),
+//                        description = description
+//                    )
+//                    saveProduct(product)
+//                }
+//            }
+//        ),
+//    )
+    val state by viewModel.uiState.collectAsState()
     ProductFormScreen(
-        state = ProductFormUiState(
-            url = url,
-            name = name,
-            price = price,
-            description = description,
-            isInvalidImage = isInvalidImage,
-            isPriceError = isPriceError,
-            errorInForm = errorInForm,
-            imageSuccess = {
-                isInvalidImage = false
-            },
-            imageError = {
-                isInvalidImage = true
-            },
-            onUrlChange = {
-                url = it
-            },
-            onNameChange = {
-                name = it
-            },
-            onPriceChange = {
-                isPriceError = try {
-                    BigDecimal(it)
-                    false
-                } catch (e: IllegalArgumentException) {
-                    it.isNotEmpty()
-                }
-                price = it
-            },
-            onDescriptionChange = {
-                description = it
-            },
-            buttonSaveClick = {
-                if (isPriceError ||
-                    (description.isEmpty() || description.isBlank()) ||
-                    (name.isEmpty() || name.isEmpty()) ||
-                    isInvalidImage || url.isBlank() || url.isEmpty()
-                ) {
-                    errorInForm = true
-                } else {
-                    errorInForm = false
-                    val product = Product(
-                        name = name,
-                        image = url,
-                        price = BigDecimal(price),
-                        description = description
-                    )
-                    saveProduct(product)
-                }
-            }
-        ),
+        state = state,
+        saveProduct = {
+            viewModel.save()
+            saveProduct()
+        }
     )
 }
 
 @Composable
 fun ProductFormScreen(
     state: ProductFormUiState,
-    saveProduct: (Product) -> Unit = {}
+    saveProduct: () -> Unit = {}
 ) {
     Column(
         Modifier
@@ -165,9 +137,7 @@ fun ProductFormScreen(
                     .height(200.dp),
                 contentScale = ContentScale.Crop,
                 placeholder = painterResource(id = R.drawable.placeholder),
-                error = painterResource(id = R.drawable.placeholder),
-                onSuccess = { state.imageSuccess },
-                onError = { state.imageError }
+                error = painterResource(id = R.drawable.placeholder)
             )
         }
         TextField(
@@ -210,14 +180,6 @@ fun ProductFormScreen(
                 imeAction = ImeAction.Next
             )
         )
-        if (state.isPriceError) {
-            Text(
-                text = "Preço deve ser um número decimal",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
         TextField(
             value = state.description,
             onValueChange = state.onDescriptionChange,
@@ -232,18 +194,10 @@ fun ProductFormScreen(
                 capitalization = KeyboardCapitalization.Sentences
             )
         )
-        if (state.errorInForm) {
-            Text(
-                text = "Todos os campos devem ser preenchidos corretamente",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        }
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = state.buttonSaveClick
+            onClick = saveProduct
         ) {
             Text(text = "Salvar")
         }
@@ -256,7 +210,7 @@ fun ProductFormScreen(
 fun ProductFormScreenPreview() {
     MenuTheme {
         Surface {
-            ProductFormScreen()
+            ProductFormScreen(state = ProductFormUiState())
         }
     }
 }

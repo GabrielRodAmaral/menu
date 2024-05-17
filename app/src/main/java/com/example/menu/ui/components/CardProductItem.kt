@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +39,7 @@ fun CardProductItem(
     elevation: Dp = 4.dp,
     expanded: Boolean = false
 ) {
-    var expandedState by remember {
+    var expandedState by rememberSaveable {
         mutableStateOf(expanded)
     }
     Card(
@@ -72,16 +73,14 @@ fun CardProductItem(
                     text = product.price.toBrazilianCurrency()
                 )
             }
-            val maxLines = if (expandedState) Int.MAX_VALUE else 2
-            val textOverflow = if (expandedState) TextOverflow.Visible else TextOverflow.Ellipsis
-            product.description?.let {
-                Text(
-                    text = product.description,
-                    Modifier
-                        .padding(16.dp),
-                    maxLines = maxLines,
-                    overflow = textOverflow
-                )
+            if (expandedState) {
+                product.description?.let {
+                    Text(
+                        text = product.description,
+                        Modifier
+                            .padding(16.dp),
+                    )
+                }
             }
         }
     )
